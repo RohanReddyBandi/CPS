@@ -41,10 +41,11 @@
     body {
       min-height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       padding: 24px;
       overflow-x: hidden;
+      overflow-y: auto;
     }
 
     body::before,
@@ -563,9 +564,8 @@
       letter-spacing: -0.04em;
     }
 
-    .modal-grid {
+    .modal-stack {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
       margin-bottom: 18px;
     }
@@ -624,8 +624,8 @@
         grid-template-columns: 76px 1fr auto;
       }
 
-      .modal-grid {
-        grid-template-columns: 1fr;
+      .hero {
+        justify-content: center;
       }
     }
   </style>
@@ -776,38 +776,14 @@
   <div id="resultModal" class="modal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
       <h2 id="resultTitle">Test Complete</h2>
-      <div class="modal-grid">
-        <div class="modal-stat">
-          <span>Total Clicks</span>
-          <strong id="modalTotalClicks">0</strong>
-        </div>
+      <div class="modal-stack">
         <div class="modal-stat">
           <span>Duration</span>
           <strong id="modalDuration">5s</strong>
         </div>
         <div class="modal-stat">
-          <span>Left Clicks</span>
-          <strong id="modalLeftClicks">0</strong>
-        </div>
-        <div class="modal-stat">
-          <span>Right Clicks</span>
-          <strong id="modalRightClicks">0</strong>
-        </div>
-        <div class="modal-stat">
-          <span>Left CPS</span>
-          <strong id="modalLeftCps">0.00</strong>
-        </div>
-        <div class="modal-stat">
-          <span>Right CPS</span>
-          <strong id="modalRightCps">0.00</strong>
-        </div>
-        <div class="modal-stat">
           <span>Total CPS</span>
           <strong id="modalTotalCps">0.00</strong>
-        </div>
-        <div class="modal-stat">
-          <span>Last Click</span>
-          <strong id="modalLastClick">None</strong>
         </div>
       </div>
       <div class="modal-actions">
@@ -851,14 +827,8 @@
             graphWindowLabel: document.getElementById("graphWindowLabel"),
             resultModal: document.getElementById("resultModal"),
             replayButton: document.getElementById("replayButton"),
-            modalTotalClicks: document.getElementById("modalTotalClicks"),
             modalDuration: document.getElementById("modalDuration"),
-            modalLeftClicks: document.getElementById("modalLeftClicks"),
-            modalRightClicks: document.getElementById("modalRightClicks"),
-            modalLeftCps: document.getElementById("modalLeftCps"),
-            modalRightCps: document.getElementById("modalRightCps"),
-            modalTotalCps: document.getElementById("modalTotalCps"),
-            modalLastClick: document.getElementById("modalLastClick")
+            modalTotalCps: document.getElementById("modalTotalCps")
           };
 
           this.audioContext = null;
@@ -1017,20 +987,10 @@
         showResultModal() {
           const elapsed = Math.max(this.getElapsedSeconds(), this.duration);
           const totalClicks = this.getTotalClicks();
-          const leftCps = this.toCps(this.state.leftClicks, elapsed);
-          const rightCps = this.toCps(this.state.rightClicks, elapsed);
           const totalCps = this.toCps(totalClicks, elapsed);
 
-          this.ui.modalTotalClicks.textContent = String(totalClicks);
           this.ui.modalDuration.textContent = `${this.duration}s`;
-          this.ui.modalLeftClicks.textContent = String(this.state.leftClicks);
-          this.ui.modalRightClicks.textContent = String(this.state.rightClicks);
-          this.ui.modalLeftCps.textContent = leftCps.toFixed(2);
-          this.ui.modalRightCps.textContent = rightCps.toFixed(2);
           this.ui.modalTotalCps.textContent = totalCps.toFixed(2);
-          this.ui.modalLastClick.textContent = this.state.lastButton === "none"
-            ? "None"
-            : this.state.lastButton.charAt(0).toUpperCase() + this.state.lastButton.slice(1);
 
           this.ui.resultModal.classList.add("open");
           this.ui.resultModal.setAttribute("aria-hidden", "false");
