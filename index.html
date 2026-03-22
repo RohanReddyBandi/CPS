@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CPS Pulse Arena</title>
+  <style>
+    :root {
+      --bg: #060816;
+      --bg-accent: #0d1226;
+      --panel: rgba(12, 18, 38, 0.82);
+      --panel-strong: rgba(18, 26, 54, 0.94);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f6f8ff;
+      --muted: #92a0c8;
+      --cyan: #51d7ff;
+      --blue: #6d8dff;
+      --pink: #ff4fa3;
+      --green: #3df2a4;
+      --warning: #ffcf59;
+      --shadow: 0 24px 90px rgba(0, 0, 0, 0.45);
+      --radius: 24px;
+      --font: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      font-family: var(--font);
+      background:
+        radial-gradient(circle at top left, rgba(81, 215, 255, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(255, 79, 163, 0.14), transparent 24%),
+        linear-gradient(145deg, #040611 0%, #091022 50%, #04050d 100%);
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto;
+      border-radius: 999px;
+      pointer-events: none;
+      filter: blur(70px);
+      opacity: 0.45;
+    }
+
+    body::before {
+      width: 18rem;
+      height: 18rem;
+      left: -4rem;
+      bottom: -5rem;
+      background: rgba(81, 215, 255, 0.2);
+    }
+
+    body::after {
+      width: 16rem;
+      height: 16rem;
+      right: -3rem;
+      top: -4rem;
+      background: rgba(255, 79, 163, 0.18);
+    }
+
+    .app {
+      width: min(1180px, 100%);
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(180deg, rgba(7, 11, 24, 0.92), rgba(8, 10, 19, 0.84));
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+      overflow: hidden;
+    }
+
+    .app::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, rgba(255, 255, 255, 0.04), transparent 30%),
+        linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.03));
+      pointer-events: none;
+    }
+
+    .shell {
+      position: relative;
+      display: grid;
+      gap: 24px;
+      padding: 28px;
+    }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: var(--cyan);
+      background: rgba(81, 215, 255, 0.08);
+      border: 1px solid rgba(81, 215, 255, 0.18);
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      margin: 14px 0 8px;
+      font-size: clamp(2rem, 4vw, 3.8rem);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+      max-width: 10ch;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 54ch;
+      line-height: 1.6;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .toggle,
+    .reset-btn,
+    .duration-btn {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      border-radius: 16px;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .toggle,
+    .reset-btn {
+      padding: 14px 18px;
+      cursor: pointer;
+    }
+
+    .toggle:hover,
+    .reset-btn:hover,
+    .duration-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(81, 215, 255, 0.28);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .toggle.active {
+      background: rgba(61, 242, 164, 0.12);
+      border-color: rgba(61, 242, 164, 0.35);
+      box-shadow: 0 0 0 1px rgba(61, 242, 164, 0.14) inset;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.95fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .panel {
+      position: relative;
+      background: linear-gradient(180deg, var(--panel), var(--panel-strong));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.025), transparent 35%);
+      pointer-events: none;
+    }
+
+    .arena-panel {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .top-strip,
+    .stats-grid,
+    .detail-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .top-strip {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .pill {
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 18px;
+    }
+
+    .label {
+      display: block;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .value {
+      font-size: clamp(1.4rem, 3vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    .subvalue {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .duration-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .duration-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .duration-btn {
+      cursor: pointer;
+      padding: 12px 16px;
+      min-width: 62px;
+      font-weight: 600;
+    }
+
+    .duration-btn.active {
+      background: linear-gradient(120deg, rgba(81, 215, 255, 0.16), rgba(109, 141, 255, 0.18));
+      border-color: rgba(81, 215, 255, 0.35);
+      box-shadow: 0 14px 30px rgba(81, 215, 255, 0.12);
+    }
+
+    .status-badge {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--muted);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .status-badge.live {
+      color: var(--green);
+      border-color: rgba(61, 242, 164, 0.28);
+      background: rgba(61, 242, 164, 0.08);
+    }
+
+    .click-zone {
+      position: relative;
+      min-height: 360px;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background:
+        linear-gradient(160deg, rgba(255, 255, 255, 0.03), transparent 32%),
+        radial-gradient(circle at top, rgba(109, 141, 255, 0.18), transparent 45%),
+        linear-gradient(180deg, rgba(7, 12, 28, 0.9), rgba(11, 16, 34, 0.96));
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 22px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.08s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.2s ease;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025), 0 26px 50px rgba(0, 0, 0, 0.22);
+      isolation: isolate;
+    }
+
+    .click-zone::before,
+    .click-zone::after {
+      content: "";
+      position: absolute;
+      inset: auto;
+      width: 160px;
+      height: 160px;
+      border-radius: 999px;
+      filter: blur(50px);
+      opacity: 0.3;
+      pointer-events: none;
+      transition: background 0.2s ease, opacity 0.2s ease;
+    }
+
+    .click-zone::before {
+      left: -20px;
+      bottom: -30px;
+      background: rgba(81, 215, 255, 0.16);
+    }
+
+    .click-zone::after {
+      right: -24px;
+      top: -28px;
+      background: rgba(255, 79, 163, 0.14);
+    }
+
+    .click-zone.idle:hover {
+      border-color: rgba(81, 215, 255, 0.24);
+      box-shadow: inset 0 0 0 1px rgba(81, 215, 255, 0.12), 0 26px 50px rgba(0, 0, 0, 0.28);
+    }
+
+    .click-zone.live {
+      border-color: rgba(81, 215, 255, 0.3);
+      box-shadow: inset 0 0 0 1px rgba(81, 215, 255, 0.12), 0 30px 60px rgba(0, 0, 0, 0.32);
+    }
+
+    .click-zone.left-active {
+      background:
+        linear-gradient(160deg, rgba(255, 255, 255, 0.04), transparent 32%),
+        radial-gradient(circle at top, rgba(81, 215, 255, 0.28), transparent 45%),
+        linear-gradient(180deg, rgba(6, 18, 38, 0.95), rgba(9, 26, 48, 0.96));
+      border-color: rgba(81, 215, 255, 0.46);
+    }
+
+    .click-zone.right-active {
+      background:
+        linear-gradient(160deg, rgba(255, 255, 255, 0.04), transparent 32%),
+        radial-gradient(circle at top, rgba(255, 79, 163, 0.28), transparent 45%),
+        linear-gradient(180deg, rgba(24, 10, 29, 0.95), rgba(41, 11, 28, 0.96));
+      border-color: rgba(255, 79, 163, 0.44);
+    }
+
+    .click-zone.pressed {
+      transform: scale(0.985);
+    }
+
+    .zone-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 540px;
+    }
+
+    .zone-inner h2 {
+      margin: 0;
+      font-size: clamp(2.4rem, 6vw, 5rem);
+      letter-spacing: -0.05em;
+    }
+
+    .zone-inner p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+
+    .last-click {
+      margin-top: 20px;
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      font-size: 0.92rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--warning);
+      box-shadow: 0 0 12px rgba(255, 207, 89, 0.45);
+    }
+
+    .dot.left {
+      background: var(--cyan);
+      box-shadow: 0 0 14px rgba(81, 215, 255, 0.5);
+    }
+
+    .dot.right {
+      background: var(--pink);
+      box-shadow: 0 0 14px rgba(255, 79, 163, 0.48);
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .stat-card,
+    .side-card {
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+    }
+
+    .stat-card strong,
+    .side-card strong {
+      display: block;
+      margin-top: 6px;
+      font-size: clamp(1.4rem, 3.4vw, 2.3rem);
+      letter-spacing: -0.04em;
+    }
+
+    .left-card strong {
+      color: var(--cyan);
+    }
+
+    .right-card strong {
+      color: var(--pink);
+    }
+
+    .total-card strong {
+      color: var(--green);
+    }
+
+    .detail-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .side-panel {
+      padding: 22px;
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .side-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .side-head h3 {
+      margin: 0;
+      font-size: 1.18rem;
+      letter-spacing: -0.02em;
+    }
+
+    .side-head span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .progress-shell {
+      height: 14px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--blue), var(--pink));
+      box-shadow: 0 0 22px rgba(81, 215, 255, 0.22);
+      transition: width 0.08s linear;
+    }
+
+    .rate-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .rate-row {
+      display: grid;
+      grid-template-columns: 92px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      font-size: 0.92rem;
+    }
+
+    .bar-track {
+      position: relative;
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .bar-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0;
+      border-radius: inherit;
+      transition: width 0.12s ease;
+    }
+
+    .bar-fill.left {
+      background: linear-gradient(90deg, rgba(81, 215, 255, 0.4), rgba(81, 215, 255, 1));
+    }
+
+    .bar-fill.right {
+      background: linear-gradient(90deg, rgba(255, 79, 163, 0.35), rgba(255, 79, 163, 1));
+    }
+
+    .bar-fill.total {
+      background: linear-gradient(90deg, rgba(61, 242, 164, 0.42), rgba(61, 242, 164, 1));
+    }
+
+    .graph-shell {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .graph-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend i {
+      width: 20px;
+      height: 3px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .summary {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .summary strong {
+      color: var(--text);
+    }
+
+    @media (max-width: 980px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 14px;
+      }
+
+      .shell {
+        padding: 18px;
+      }
+
+      .top-strip,
+      .stats-grid,
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        max-width: none;
+      }
+
+      .click-zone {
+        min-height: 300px;
+      }
+
+      .rate-row {
+        grid-template-columns: 76px 1fr auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="shell">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Dual Input Arena</div>
+          <h1>CPS test for left and right click speed.</h1>
+          <p>
+            Start on the first click, race the countdown, and track left-click, right-click,
+            and total CPS in real time inside one responsive, dark-mode panel.
+          </p>
+        </div>
+        <div class="header-actions">
+          <button id="soundToggle" class="toggle" type="button" aria-pressed="false">Sound: Off</button>
+          <button id="resetButton" class="reset-btn" type="button">Reset Test</button>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel arena-panel">
+          <div class="top-strip">
+            <div class="pill">
+              <span class="label">Total Clicks</span>
+              <div id="totalClicks" class="value">0</div>
+              <div id="clickSplit" class="subvalue">L 0 / R 0</div>
+            </div>
+            <div class="pill">
+              <span class="label">Timer</span>
+              <div id="timerValue" class="value">5.00s</div>
+              <div id="timerLabel" class="subvalue">Waiting for first click</div>
+            </div>
+            <div class="pill">
+              <span class="label">Status</span>
+              <div id="statusText" class="value">Ready</div>
+              <div id="statusHint" class="subvalue">Click inside the arena to begin</div>
+            </div>
+          </div>
+
+          <div class="duration-row">
+            <div class="duration-group" id="durationGroup" aria-label="Test duration options">
+              <button class="duration-btn" data-duration="1" type="button">1s</button>
+              <button class="duration-btn active" data-duration="5" type="button">5s</button>
+              <button class="duration-btn" data-duration="10" type="button">10s</button>
+              <button class="duration-btn" data-duration="15" type="button">15s</button>
+            </div>
+            <div id="liveBadge" class="status-badge">Idle</div>
+          </div>
+
+          <div id="clickZone" class="click-zone idle" tabindex="0" role="button" aria-label="Click area for CPS test">
+            <div class="zone-inner">
+              <span class="label">Click Zone</span>
+              <h2 id="zoneHeadline">Tap to Launch</h2>
+              <p id="zoneMessage">Left click glows cyan. Right click glows magenta. Right-click menu is blocked only while the timer is live.</p>
+              <div class="last-click">
+                <span id="clickIndicator" class="dot"></span>
+                <span id="lastClickText">Last click: none</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card left-card">
+              <span class="label">Left Click CPS</span>
+              <strong id="leftCps">0.00</strong>
+            </div>
+            <div class="stat-card right-card">
+              <span class="label">Right Click CPS</span>
+              <strong id="rightCps">0.00</strong>
+            </div>
+            <div class="stat-card total-card">
+              <span class="label">Total CPS</span>
+              <strong id="totalCps">0.00</strong>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="side-card">
+              <span class="label">Left Clicks</span>
+              <strong id="leftClicks">0</strong>
+            </div>
+            <div class="side-card">
+              <span class="label">Right Clicks</span>
+              <strong id="rightClicks">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <aside class="panel side-panel">
+          <div class="side-head">
+            <h3>Session Pressure</h3>
+            <span id="elapsedLabel">0.00s elapsed</span>
+          </div>
+
+          <div class="progress-shell" aria-hidden="true">
+            <div id="progressBar" class="progress-bar"></div>
+          </div>
+
+          <div class="rate-list">
+            <div class="rate-row">
+              <span>Left Rate</span>
+              <div class="bar-track"><div id="leftBar" class="bar-fill left"></div></div>
+              <strong id="leftRateLabel">0.00</strong>
+            </div>
+            <div class="rate-row">
+              <span>Right Rate</span>
+              <div class="bar-track"><div id="rightBar" class="bar-fill right"></div></div>
+              <strong id="rightRateLabel">0.00</strong>
+            </div>
+            <div class="rate-row">
+              <span>Total Rate</span>
+              <div class="bar-track"><div id="totalBar" class="bar-fill total"></div></div>
+              <strong id="totalRateLabel">0.00</strong>
+            </div>
+          </div>
+
+          <div class="graph-shell">
+            <div class="graph-meta">
+              <span>Click rate timeline</span>
+              <span id="graphWindowLabel">0.2s buckets</span>
+            </div>
+            <svg id="graph" viewBox="0 0 520 180" aria-label="Click rate graph">
+              <defs>
+                <linearGradient id="leftGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+                  <stop offset="0%" stop-color="#51d7ff" stop-opacity="0.4"></stop>
+                  <stop offset="100%" stop-color="#51d7ff" stop-opacity="1"></stop>
+                </linearGradient>
+                <linearGradient id="rightGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+                  <stop offset="0%" stop-color="#ff4fa3" stop-opacity="0.4"></stop>
+                  <stop offset="100%" stop-color="#ff4fa3" stop-opacity="1"></stop>
+                </linearGradient>
+                <linearGradient id="totalGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+                  <stop offset="0%" stop-color="#3df2a4" stop-opacity="0.45"></stop>
+                  <stop offset="100%" stop-color="#3df2a4" stop-opacity="1"></stop>
+                </linearGradient>
+              </defs>
+              <rect x="0" y="0" width="520" height="180" rx="16" fill="rgba(255,255,255,0.015)"></rect>
+              <g stroke="rgba(255,255,255,0.08)" stroke-width="1">
+                <line x1="24" y1="28" x2="496" y2="28"></line>
+                <line x1="24" y1="84" x2="496" y2="84"></line>
+                <line x1="24" y1="140" x2="496" y2="140"></line>
+              </g>
+              <path id="leftPath" d="" fill="none" stroke="url(#leftGradient)" stroke-width="4" stroke-linecap="round"></path>
+              <path id="rightPath" d="" fill="none" stroke="url(#rightGradient)" stroke-width="4" stroke-linecap="round"></path>
+              <path id="totalPath" d="" fill="none" stroke="url(#totalGradient)" stroke-width="4" stroke-linecap="round"></path>
+            </svg>
+            <div class="legend">
+              <span><i style="background:#51d7ff"></i> Left</span>
+              <span><i style="background:#ff4fa3"></i> Right</span>
+              <span><i style="background:#3df2a4"></i> Total</span>
+            </div>
+          </div>
+
+          <p id="summaryText" class="summary">
+            <strong>Tip:</strong> the timer starts on your first valid click, then every click inside the arena updates the live CPS counters until the session locks.
+          </p>
+        </aside>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      class CpsArena {
+        constructor() {
+          this.ui = {
+            clickZone: document.getElementById("clickZone"),
+            totalClicks: document.getElementById("totalClicks"),
+            leftClicks: document.getElementById("leftClicks"),
+            rightClicks: document.getElementById("rightClicks"),
+            clickSplit: document.getElementById("clickSplit"),
+            leftCps: document.getElementById("leftCps"),
+            rightCps: document.getElementById("rightCps"),
+            totalCps: document.getElementById("totalCps"),
+            timerValue: document.getElementById("timerValue"),
+            timerLabel: document.getElementById("timerLabel"),
+            statusText: document.getElementById("statusText"),
+            statusHint: document.getElementById("statusHint"),
+            liveBadge: document.getElementById("liveBadge"),
+            zoneHeadline: document.getElementById("zoneHeadline"),
+            zoneMessage: document.getElementById("zoneMessage"),
+            clickIndicator: document.getElementById("clickIndicator"),
+            lastClickText: document.getElementById("lastClickText"),
+            resetButton: document.getElementById("resetButton"),
+            soundToggle: document.getElementById("soundToggle"),
+            durationButtons: Array.from(document.querySelectorAll(".duration-btn")),
+            progressBar: document.getElementById("progressBar"),
+            elapsedLabel: document.getElementById("elapsedLabel"),
+            leftBar: document.getElementById("leftBar"),
+            rightBar: document.getElementById("rightBar"),
+            totalBar: document.getElementById("totalBar"),
+            leftRateLabel: document.getElementById("leftRateLabel"),
+            rightRateLabel: document.getElementById("rightRateLabel"),
+            totalRateLabel: document.getElementById("totalRateLabel"),
+            leftPath: document.getElementById("leftPath"),
+            rightPath: document.getElementById("rightPath"),
+            totalPath: document.getElementById("totalPath"),
+            graphWindowLabel: document.getElementById("graphWindowLabel"),
+            summaryText: document.getElementById("summaryText")
+          };
+
+          this.audioContext = null;
+          this.duration = 5;
+          this.soundEnabled = false;
+          this.frameId = null;
+          this.flashTimeout = null;
+          this.resetState();
+          this.bindEvents();
+          this.render();
+        }
+
+        resetState() {
+          this.state = {
+            running: false,
+            finished: false,
+            startTime: 0,
+            endTime: 0,
+            leftClicks: 0,
+            rightClicks: 0,
+            lastButton: "none",
+            clickMoments: []
+          };
+          if (this.frameId) {
+            cancelAnimationFrame(this.frameId);
+            this.frameId = null;
+          }
+          clearTimeout(this.flashTimeout);
+          this.ui.clickZone.className = "click-zone idle";
+        }
+
+        bindEvents() {
+          this.ui.clickZone.addEventListener("mousedown", (event) => this.handleMouseDown(event));
+          this.ui.clickZone.addEventListener("keydown", (event) => {
+            if (event.code === "Space" || event.code === "Enter") {
+              event.preventDefault();
+            }
+          });
+
+          this.ui.clickZone.addEventListener("contextmenu", (event) => {
+            if (this.state.running) {
+              event.preventDefault();
+            }
+          });
+
+          this.ui.resetButton.addEventListener("click", () => this.reset());
+          this.ui.soundToggle.addEventListener("click", () => this.toggleSound());
+
+          this.ui.durationButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+              if (this.state.running) {
+                return;
+              }
+              this.duration = Number(button.dataset.duration);
+              this.ui.durationButtons.forEach((item) => item.classList.toggle("active", item === button));
+              this.reset();
+            });
+          });
+        }
+
+        handleMouseDown(event) {
+          const buttonType = this.getButtonType(event.button);
+          if (!buttonType) {
+            return;
+          }
+
+          event.preventDefault();
+
+          if (this.state.finished) {
+            return;
+          }
+
+          if (!this.state.running) {
+            this.start();
+          }
+
+          if (!this.state.running || performance.now() >= this.state.endTime) {
+            this.finish();
+            return;
+          }
+
+          if (buttonType === "left") {
+            this.state.leftClicks += 1;
+          } else {
+            this.state.rightClicks += 1;
+          }
+
+          this.state.lastButton = buttonType;
+          this.state.clickMoments.push({
+            time: performance.now(),
+            button: buttonType
+          });
+
+          this.flashArena(buttonType);
+          this.playClickTone(buttonType);
+          this.render();
+        }
+
+        getButtonType(button) {
+          if (button === 0) {
+            return "left";
+          }
+          if (button === 2) {
+            return "right";
+          }
+          return null;
+        }
+
+        start() {
+          const now = performance.now();
+          this.state.running = true;
+          this.state.finished = false;
+          this.state.startTime = now;
+          this.state.endTime = now + this.duration * 1000;
+          this.ui.clickZone.className = "click-zone live";
+          this.loop();
+        }
+
+        loop() {
+          if (!this.state.running) {
+            return;
+          }
+
+          const now = performance.now();
+          if (now >= this.state.endTime) {
+            this.finish();
+            return;
+          }
+
+          this.render();
+          this.frameId = requestAnimationFrame(() => this.loop());
+        }
+
+        finish() {
+          if (this.state.finished) {
+            return;
+          }
+          this.state.running = false;
+          this.state.finished = true;
+          if (this.frameId) {
+            cancelAnimationFrame(this.frameId);
+            this.frameId = null;
+          }
+          this.ui.clickZone.className = "click-zone idle";
+          this.render();
+        }
+
+        reset() {
+          this.resetState();
+          this.render();
+        }
+
+        toggleSound() {
+          this.soundEnabled = !this.soundEnabled;
+          this.ui.soundToggle.classList.toggle("active", this.soundEnabled);
+          this.ui.soundToggle.textContent = this.soundEnabled ? "Sound: On" : "Sound: Off";
+          this.ui.soundToggle.setAttribute("aria-pressed", String(this.soundEnabled));
+        }
+
+        playClickTone(buttonType) {
+          if (!this.soundEnabled) {
+            return;
+          }
+
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) {
+            return;
+          }
+
+          if (!this.audioContext) {
+            this.audioContext = new AudioContextClass();
+          }
+
+          if (this.audioContext.state === "suspended") {
+            this.audioContext.resume();
+          }
+
+          const now = this.audioContext.currentTime;
+          const oscillator = this.audioContext.createOscillator();
+          const gainNode = this.audioContext.createGain();
+          oscillator.type = buttonType === "left" ? "triangle" : "square";
+          oscillator.frequency.setValueAtTime(buttonType === "left" ? 510 : 330, now);
+          gainNode.gain.setValueAtTime(0.0001, now);
+          gainNode.gain.exponentialRampToValueAtTime(0.055, now + 0.01);
+          gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+          oscillator.connect(gainNode);
+          gainNode.connect(this.audioContext.destination);
+          oscillator.start(now);
+          oscillator.stop(now + 0.08);
+        }
+
+        flashArena(buttonType) {
+          clearTimeout(this.flashTimeout);
+          this.ui.clickZone.classList.remove("left-active", "right-active", "pressed");
+          this.ui.clickZone.classList.add(buttonType === "left" ? "left-active" : "right-active", "pressed", "live");
+          this.flashTimeout = setTimeout(() => {
+            if (this.state.running) {
+              this.ui.clickZone.classList.remove("left-active", "right-active", "pressed");
+              this.ui.clickZone.classList.add("live");
+            } else {
+              this.ui.clickZone.className = "click-zone idle";
+            }
+          }, 90);
+        }
+
+        getElapsedSeconds() {
+          if (!this.state.running && !this.state.finished) {
+            return 0;
+          }
+
+          const now = this.state.finished ? this.state.endTime : performance.now();
+          return Math.min((now - this.state.startTime) / 1000, this.duration);
+        }
+
+        getRemainingSeconds() {
+          if (!this.state.running && !this.state.finished) {
+            return this.duration;
+          }
+          if (this.state.finished) {
+            return 0;
+          }
+          return Math.max((this.state.endTime - performance.now()) / 1000, 0);
+        }
+
+        getTotalClicks() {
+          return this.state.leftClicks + this.state.rightClicks;
+        }
+
+        toCps(clicks, elapsed) {
+          return elapsed > 0 ? clicks / elapsed : 0;
+        }
+
+        buildGraphSeries() {
+          const bucketMs = 200;
+          const totalBuckets = Math.max(1, Math.ceil((this.duration * 1000) / bucketMs));
+          const left = new Array(totalBuckets).fill(0);
+          const right = new Array(totalBuckets).fill(0);
+
+          for (const click of this.state.clickMoments) {
+            const bucketIndex = Math.min(
+              totalBuckets - 1,
+              Math.floor((click.time - this.state.startTime) / bucketMs)
+            );
+            if (bucketIndex < 0) {
+              continue;
+            }
+            if (click.button === "left") {
+              left[bucketIndex] += 1;
+            } else {
+              right[bucketIndex] += 1;
+            }
+          }
+
+          const leftSeries = left.map((value) => value * (1000 / bucketMs));
+          const rightSeries = right.map((value) => value * (1000 / bucketMs));
+          const totalSeries = leftSeries.map((value, index) => value + rightSeries[index]);
+
+          return { bucketMs, leftSeries, rightSeries, totalSeries };
+        }
+
+        buildPath(series, width, height, maxValue) {
+          const usableWidth = width - 48;
+          const usableHeight = height - 44;
+          const startX = 24;
+          const startY = 18;
+
+          if (!series.length) {
+            return "";
+          }
+
+          return series
+            .map((value, index) => {
+              const x = startX + (usableWidth * index) / Math.max(series.length - 1, 1);
+              const y = startY + usableHeight - (usableHeight * value) / Math.max(maxValue, 1);
+              return `${index === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
+            })
+            .join(" ");
+        }
+
+        renderGraph() {
+          const { bucketMs, leftSeries, rightSeries, totalSeries } = this.buildGraphSeries();
+          const peak = Math.max(1, ...leftSeries, ...rightSeries, ...totalSeries);
+          this.ui.leftPath.setAttribute("d", this.buildPath(leftSeries, 520, 180, peak));
+          this.ui.rightPath.setAttribute("d", this.buildPath(rightSeries, 520, 180, peak));
+          this.ui.totalPath.setAttribute("d", this.buildPath(totalSeries, 520, 180, peak));
+          this.ui.graphWindowLabel.textContent = `${(bucketMs / 1000).toFixed(1)}s buckets`;
+        }
+
+        render() {
+          const elapsed = this.getElapsedSeconds();
+          const remaining = this.getRemainingSeconds();
+          const totalClicks = this.getTotalClicks();
+          const leftCps = this.toCps(this.state.leftClicks, elapsed);
+          const rightCps = this.toCps(this.state.rightClicks, elapsed);
+          const totalCps = this.toCps(totalClicks, elapsed);
+          const progress = ((this.duration - remaining) / this.duration) * 100;
+          const rateScale = Math.max(1, totalCps, leftCps, rightCps, 20);
+
+          this.ui.totalClicks.textContent = String(totalClicks);
+          this.ui.leftClicks.textContent = String(this.state.leftClicks);
+          this.ui.rightClicks.textContent = String(this.state.rightClicks);
+          this.ui.clickSplit.textContent = `L ${this.state.leftClicks} / R ${this.state.rightClicks}`;
+
+          this.ui.leftCps.textContent = leftCps.toFixed(2);
+          this.ui.rightCps.textContent = rightCps.toFixed(2);
+          this.ui.totalCps.textContent = totalCps.toFixed(2);
+
+          this.ui.timerValue.textContent = `${remaining.toFixed(2)}s`;
+          this.ui.elapsedLabel.textContent = `${elapsed.toFixed(2)}s elapsed`;
+          this.ui.progressBar.style.width = `${Math.min(Math.max(progress, 0), 100)}%`;
+
+          this.ui.leftBar.style.width = `${(leftCps / rateScale) * 100}%`;
+          this.ui.rightBar.style.width = `${(rightCps / rateScale) * 100}%`;
+          this.ui.totalBar.style.width = `${(totalCps / rateScale) * 100}%`;
+          this.ui.leftRateLabel.textContent = leftCps.toFixed(2);
+          this.ui.rightRateLabel.textContent = rightCps.toFixed(2);
+          this.ui.totalRateLabel.textContent = totalCps.toFixed(2);
+
+          this.ui.clickIndicator.className = `dot ${this.state.lastButton === "none" ? "" : this.state.lastButton}`.trim();
+          this.ui.lastClickText.textContent = `Last click: ${this.state.lastButton === "none" ? "none" : this.state.lastButton}`;
+
+          if (!this.state.running && !this.state.finished) {
+            this.ui.statusText.textContent = "Ready";
+            this.ui.statusHint.textContent = "Click inside the arena to begin";
+            this.ui.timerLabel.textContent = "Waiting for first click";
+            this.ui.liveBadge.textContent = "Idle";
+            this.ui.liveBadge.classList.remove("live");
+            this.ui.zoneHeadline.textContent = "Tap to Launch";
+            this.ui.zoneMessage.textContent = "Left click glows cyan. Right click glows magenta. Right-click menu is blocked only while the timer is live.";
+            this.ui.summaryText.innerHTML = "<strong>Tip:</strong> the timer starts on your first valid click, then every click inside the arena updates the live CPS counters until the session locks.";
+          } else if (this.state.running) {
+            this.ui.statusText.textContent = "Live";
+            this.ui.statusHint.textContent = "Clicks are counting now";
+            this.ui.timerLabel.textContent = "Countdown in progress";
+            this.ui.liveBadge.textContent = "Running";
+            this.ui.liveBadge.classList.add("live");
+            this.ui.zoneHeadline.textContent = `${totalCps.toFixed(2)} CPS`;
+            this.ui.zoneMessage.textContent = "Keep clicking inside this box. Clicks outside the arena are ignored, and the session will auto-freeze when time expires.";
+            this.ui.summaryText.innerHTML = `<strong>Live:</strong> ${totalClicks} total clicks over ${elapsed.toFixed(2)} seconds. Current split is ${this.state.leftClicks} left and ${this.state.rightClicks} right.`;
+          } else {
+            this.ui.statusText.textContent = "Locked";
+            this.ui.statusHint.textContent = "Final score captured";
+            this.ui.timerLabel.textContent = "Session complete";
+            this.ui.liveBadge.textContent = "Finished";
+            this.ui.liveBadge.classList.remove("live");
+            this.ui.zoneHeadline.textContent = `${totalCps.toFixed(2)} Final CPS`;
+            this.ui.zoneMessage.textContent = "The timer ended and the arena is frozen. Reset to run another round or change the test duration first.";
+            this.ui.summaryText.innerHTML = `<strong>Final result:</strong> ${totalClicks} clicks in ${this.duration} seconds. Left CPS ${leftCps.toFixed(2)}, right CPS ${rightCps.toFixed(2)}, total CPS ${totalCps.toFixed(2)}.`;
+          }
+
+          this.renderGraph();
+        }
+      }
+
+      new CpsArena();
+    })();
+  </script>
+</body>
+</html>
