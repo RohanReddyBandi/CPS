@@ -170,13 +170,6 @@
       box-shadow: 0 0 0 1px rgba(61, 242, 164, 0.14) inset;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1.2fr 0.95fr;
-      gap: 24px;
-      align-items: stretch;
-    }
-
     .panel {
       position: relative;
       background: linear-gradient(180deg, var(--panel), var(--panel-strong));
@@ -200,6 +193,12 @@
       gap: 18px;
     }
 
+    .bottom-panel {
+      padding: 22px;
+      display: grid;
+      gap: 18px;
+    }
+
     .top-strip,
     .stats-grid,
     .detail-grid {
@@ -208,7 +207,7 @@
     }
 
     .top-strip {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .pill {
@@ -264,23 +263,6 @@
       background: linear-gradient(120deg, rgba(69, 255, 122, 0.18), rgba(69, 255, 122, 0.08));
       border-color: rgba(69, 255, 122, 0.35);
       box-shadow: 0 14px 30px rgba(69, 255, 122, 0.12);
-    }
-
-    .status-badge {
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      background: rgba(255, 255, 255, 0.035);
-      color: var(--muted);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .status-badge.live {
-      color: var(--green);
-      border-color: rgba(61, 242, 164, 0.28);
-      background: rgba(61, 242, 164, 0.08);
     }
 
     .click-zone {
@@ -438,13 +420,6 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .side-panel {
-      padding: 22px;
-      display: grid;
-      gap: 18px;
-      align-content: start;
-    }
-
     .side-head {
       display: flex;
       align-items: baseline;
@@ -566,22 +541,6 @@
       display: inline-block;
     }
 
-    .summary {
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 0.95rem;
-    }
-
-    .summary strong {
-      color: var(--text);
-    }
-
-    @media (max-width: 980px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
     @media (max-width: 760px) {
       body {
         padding: 14px;
@@ -625,8 +584,7 @@
         </div>
       </section>
 
-      <section class="grid">
-        <div class="panel arena-panel">
+      <section class="panel arena-panel">
           <div class="top-strip">
             <div class="pill">
               <span class="label">Total Clicks</span>
@@ -638,11 +596,6 @@
               <div id="timerValue" class="value">5.00s</div>
               <div id="timerLabel" class="subvalue">&nbsp;</div>
             </div>
-            <div class="pill">
-              <span class="label">Status</span>
-              <div id="statusText" class="value">Ready</div>
-              <div id="statusHint" class="subvalue">&nbsp;</div>
-            </div>
           </div>
 
           <div class="duration-row">
@@ -652,7 +605,6 @@
               <button class="duration-btn" data-duration="10" type="button">10s</button>
               <button class="duration-btn" data-duration="15" type="button">15s</button>
             </div>
-            <div id="liveBadge" class="status-badge">Idle</div>
           </div>
 
           <div id="clickZone" class="click-zone idle" tabindex="0" role="button" aria-label="Click area for CPS test">
@@ -691,11 +643,11 @@
               <strong id="rightClicks">0</strong>
             </div>
           </div>
-        </div>
+      </section>
 
-        <aside class="panel side-panel">
+      <section class="panel bottom-panel">
           <div class="side-head">
-            <h3>Session Pressure</h3>
+            <h3>Session</h3>
             <span id="elapsedLabel">0.00s elapsed</span>
           </div>
 
@@ -752,13 +704,11 @@
               <path id="totalPath" d="" fill="none" stroke="url(#totalGradient)" stroke-width="4" stroke-linecap="round"></path>
             </svg>
             <div class="legend">
-              <span><i style="background:#51d7ff"></i> Left</span>
-              <span><i style="background:#ff4fa3"></i> Right</span>
-              <span><i style="background:#3df2a4"></i> Total</span>
+              <span><i style="background:#45ff7a"></i> Left</span>
+              <span><i style="background:#ffffff"></i> Right</span>
+              <span><i style="background:#45ff7a"></i> Total</span>
             </div>
           </div>
-
-        </aside>
       </section>
     </div>
   </main>
@@ -778,9 +728,6 @@
             totalCps: document.getElementById("totalCps"),
             timerValue: document.getElementById("timerValue"),
             timerLabel: document.getElementById("timerLabel"),
-            statusText: document.getElementById("statusText"),
-            statusHint: document.getElementById("statusHint"),
-            liveBadge: document.getElementById("liveBadge"),
             zoneHeadline: document.getElementById("zoneHeadline"),
             clickIndicator: document.getElementById("clickIndicator"),
             lastClickText: document.getElementById("lastClickText"),
@@ -1121,25 +1068,13 @@
           this.ui.lastClickText.textContent = `Last click: ${this.state.lastButton === "none" ? "none" : this.state.lastButton}`;
 
           if (!this.state.running && !this.state.finished) {
-            this.ui.statusText.textContent = "Ready";
-            this.ui.statusHint.innerHTML = "&nbsp;";
             this.ui.timerLabel.innerHTML = "&nbsp;";
-            this.ui.liveBadge.textContent = "Idle";
-            this.ui.liveBadge.classList.remove("live");
             this.ui.zoneHeadline.textContent = "Ready";
           } else if (this.state.running) {
-            this.ui.statusText.textContent = "Live";
-            this.ui.statusHint.innerHTML = "&nbsp;";
             this.ui.timerLabel.innerHTML = "&nbsp;";
-            this.ui.liveBadge.textContent = "Running";
-            this.ui.liveBadge.classList.add("live");
             this.ui.zoneHeadline.textContent = `${totalCps.toFixed(2)} CPS`;
           } else {
-            this.ui.statusText.textContent = "Locked";
-            this.ui.statusHint.innerHTML = "&nbsp;";
             this.ui.timerLabel.innerHTML = "&nbsp;";
-            this.ui.liveBadge.textContent = "Finished";
-            this.ui.liveBadge.classList.remove("live");
             this.ui.zoneHeadline.textContent = `${totalCps.toFixed(2)} Final CPS`;
           }
 
