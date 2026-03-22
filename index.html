@@ -129,7 +129,8 @@
 
     .toggle,
     .reset-btn,
-    .duration-btn {
+    .duration-btn,
+    .effect-btn {
       border: 1px solid var(--border);
       background: rgba(255, 255, 255, 0.04);
       color: var(--text);
@@ -145,7 +146,8 @@
 
     .toggle:hover,
     .reset-btn:hover,
-    .duration-btn:hover {
+    .duration-btn:hover,
+    .effect-btn:hover {
       transform: translateY(-1px);
       border-color: rgba(69, 255, 122, 0.28);
       background: rgba(255, 255, 255, 0.07);
@@ -239,6 +241,12 @@
       gap: 10px;
     }
 
+    .control-block {
+      display: grid;
+      gap: 10px;
+      justify-items: center;
+    }
+
     .duration-btn {
       cursor: pointer;
       padding: 12px 16px;
@@ -246,10 +254,30 @@
       font-weight: 600;
     }
 
+    .effect-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .effect-btn {
+      cursor: pointer;
+      padding: 11px 14px;
+      min-width: 76px;
+      font-weight: 600;
+    }
+
     .duration-btn.active {
       background: linear-gradient(120deg, rgba(69, 255, 122, 0.18), rgba(69, 255, 122, 0.08));
       border-color: rgba(69, 255, 122, 0.35);
       box-shadow: 0 14px 30px rgba(69, 255, 122, 0.12);
+    }
+
+    .effect-btn.active {
+      background: linear-gradient(120deg, rgba(255, 255, 255, 0.16), rgba(69, 255, 122, 0.1));
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 10px 24px rgba(69, 255, 122, 0.08);
     }
 
     .click-zone {
@@ -332,6 +360,7 @@
       position: relative;
       z-index: 1;
       max-width: 540px;
+      pointer-events: none;
     }
 
     .zone-inner h2 {
@@ -351,6 +380,105 @@
       border: 1px solid rgba(255, 255, 255, 0.06);
       color: var(--text);
       font-size: 0.92rem;
+    }
+
+    .effect-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .effect {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+
+    .effect-splash {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(69, 255, 122, 0.8) 0%, rgba(69, 255, 122, 0.36) 45%, rgba(69, 255, 122, 0) 72%);
+      animation: splash-pop 480ms ease-out forwards;
+      box-shadow: 0 0 34px rgba(69, 255, 122, 0.32);
+    }
+
+    .effect-star {
+      width: 34px;
+      height: 34px;
+      color: #ffffff;
+      font-size: 34px;
+      line-height: 1;
+      text-align: center;
+      text-shadow: 0 0 18px rgba(255, 255, 255, 0.28);
+      animation: star-burst 620ms ease-out forwards;
+    }
+
+    .effect-text {
+      color: var(--green);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      text-shadow: 0 0 16px rgba(69, 255, 122, 0.22);
+      animation: text-rise 560ms ease-out forwards;
+    }
+
+    .effect-ring {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      border: 2px solid rgba(69, 255, 122, 0.88);
+      box-shadow: 0 0 20px rgba(69, 255, 122, 0.18);
+      animation: ring-wave 520ms ease-out forwards;
+    }
+
+    @keyframes splash-pop {
+      0% {
+        opacity: 0.95;
+        transform: translate(-50%, -50%) scale(0.35);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(9);
+      }
+    }
+
+    @keyframes star-burst {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.45) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -150%) scale(1.6) rotate(18deg);
+      }
+    }
+
+    @keyframes text-rise {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.9);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -180%) scale(1.08);
+      }
+    }
+
+    @keyframes ring-wave {
+      0% {
+        opacity: 0.9;
+        transform: translate(-50%, -50%) scale(0.2);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(8.6);
+      }
     }
 
     .dot {
@@ -658,16 +786,29 @@
           </div>
 
           <div class="duration-row">
-            <div class="duration-group" id="durationGroup" aria-label="Test duration options">
-              <button class="duration-btn active" data-duration="5" type="button">5s</button>
-              <button class="duration-btn" data-duration="10" type="button">10s</button>
-              <button class="duration-btn" data-duration="15" type="button">15s</button>
-              <button class="duration-btn" data-duration="30" type="button">30s</button>
-              <button class="duration-btn" data-duration="60" type="button">60s</button>
+            <div class="control-block">
+              <span class="label">Time</span>
+              <div class="duration-group" id="durationGroup" aria-label="Test duration options">
+                <button class="duration-btn active" data-duration="5" type="button">5s</button>
+                <button class="duration-btn" data-duration="10" type="button">10s</button>
+                <button class="duration-btn" data-duration="15" type="button">15s</button>
+                <button class="duration-btn" data-duration="30" type="button">30s</button>
+                <button class="duration-btn" data-duration="60" type="button">60s</button>
+              </div>
+            </div>
+            <div class="control-block">
+              <span class="label">Effect</span>
+              <div class="effect-group" id="effectGroup" aria-label="Click effect options">
+                <button class="effect-btn active" data-effect="splash" type="button">Splash</button>
+                <button class="effect-btn" data-effect="star" type="button">Star</button>
+                <button class="effect-btn" data-effect="text" type="button">Text</button>
+                <button class="effect-btn" data-effect="ring" type="button">Ring</button>
+              </div>
             </div>
           </div>
 
           <div id="clickZone" class="click-zone idle" tabindex="0" role="button" aria-label="Click area for CPS test">
+            <div id="effectLayer" class="effect-layer" aria-hidden="true"></div>
             <div class="zone-inner">
               <span class="label">Click Zone</span>
               <h2 id="zoneHeadline">Ready</h2>
@@ -813,6 +954,8 @@
             resetButton: document.getElementById("resetButton"),
             soundToggle: document.getElementById("soundToggle"),
             durationButtons: Array.from(document.querySelectorAll(".duration-btn")),
+            effectButtons: Array.from(document.querySelectorAll(".effect-btn")),
+            effectLayer: document.getElementById("effectLayer"),
             progressBar: document.getElementById("progressBar"),
             elapsedLabel: document.getElementById("elapsedLabel"),
             leftBar: document.getElementById("leftBar"),
@@ -833,6 +976,7 @@
 
           this.audioContext = null;
           this.duration = 5;
+          this.selectedEffect = "splash";
           this.soundEnabled = false;
           this.frameId = null;
           this.flashTimeout = null;
@@ -889,6 +1033,13 @@
               this.reset();
             });
           });
+
+          this.ui.effectButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+              this.selectedEffect = button.dataset.effect;
+              this.ui.effectButtons.forEach((item) => item.classList.toggle("active", item === button));
+            });
+          });
         }
 
         handleMouseDown(event) {
@@ -925,6 +1076,7 @@
           });
 
           this.flashArena(buttonType);
+          this.spawnClickEffect(event, buttonType);
           this.playClickTone(buttonType);
           this.render();
         }
@@ -1052,6 +1204,44 @@
               this.ui.clickZone.className = "click-zone idle";
             }
           }, 90);
+        }
+
+        spawnClickEffect(event, buttonType) {
+          const rect = this.ui.clickZone.getBoundingClientRect();
+          const effect = document.createElement("span");
+          const x = event.clientX - rect.left;
+          const y = event.clientY - rect.top;
+
+          effect.classList.add("effect");
+          effect.style.left = `${x}px`;
+          effect.style.top = `${y}px`;
+
+          switch (this.selectedEffect) {
+            case "star":
+              effect.classList.add("effect-star");
+              effect.textContent = "✦";
+              effect.style.color = buttonType === "left" ? "#45ff7a" : "#ffffff";
+              break;
+            case "text":
+              effect.classList.add("effect-text");
+              effect.textContent = buttonType === "left" ? "CLICK" : "RIGHT";
+              effect.style.color = buttonType === "left" ? "#45ff7a" : "#ffffff";
+              break;
+            case "ring":
+              effect.classList.add("effect-ring");
+              effect.style.borderColor = buttonType === "left" ? "rgba(69, 255, 122, 0.88)" : "rgba(255, 255, 255, 0.88)";
+              break;
+            case "splash":
+            default:
+              effect.classList.add("effect-splash");
+              effect.style.background = buttonType === "left"
+                ? "radial-gradient(circle, rgba(69, 255, 122, 0.8) 0%, rgba(69, 255, 122, 0.36) 45%, rgba(69, 255, 122, 0) 72%)"
+                : "radial-gradient(circle, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.26) 45%, rgba(255, 255, 255, 0) 72%)";
+              break;
+          }
+
+          this.ui.effectLayer.appendChild(effect);
+          effect.addEventListener("animationend", () => effect.remove(), { once: true });
         }
 
         getElapsedSeconds() {
