@@ -6,18 +6,17 @@
   <title>CPS Pulse Arena</title>
   <style>
     :root {
-      --bg: #060816;
-      --bg-accent: #0d1226;
-      --panel: rgba(12, 18, 38, 0.82);
-      --panel-strong: rgba(18, 26, 54, 0.94);
+      --bg: #000000;
+      --bg-accent: #041107;
+      --panel: rgba(3, 8, 4, 0.9);
+      --panel-strong: rgba(5, 14, 7, 0.96);
       --border: rgba(255, 255, 255, 0.08);
-      --text: #f6f8ff;
-      --muted: #92a0c8;
-      --cyan: #51d7ff;
-      --blue: #6d8dff;
-      --pink: #ff4fa3;
-      --green: #3df2a4;
-      --warning: #ffcf59;
+      --text: #ffffff;
+      --muted: #9fd3ae;
+      --green: #45ff7a;
+      --green-soft: #1a7d37;
+      --green-deep: #0d3d1b;
+      --warning: #ffffff;
       --shadow: 0 24px 90px rgba(0, 0, 0, 0.45);
       --radius: 24px;
       --font: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;
@@ -33,9 +32,9 @@
       margin: 0;
       font-family: var(--font);
       background:
-        radial-gradient(circle at top left, rgba(81, 215, 255, 0.16), transparent 28%),
-        radial-gradient(circle at top right, rgba(255, 79, 163, 0.14), transparent 24%),
-        linear-gradient(145deg, #040611 0%, #091022 50%, #04050d 100%);
+        radial-gradient(circle at top left, rgba(69, 255, 122, 0.12), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(69, 255, 122, 0.08), transparent 24%),
+        linear-gradient(145deg, #000000 0%, #010401 50%, #000000 100%);
       color: var(--text);
     }
 
@@ -64,7 +63,7 @@
       height: 18rem;
       left: -4rem;
       bottom: -5rem;
-      background: rgba(81, 215, 255, 0.2);
+      background: rgba(69, 255, 122, 0.16);
     }
 
     body::after {
@@ -72,7 +71,7 @@
       height: 16rem;
       right: -3rem;
       top: -4rem;
-      background: rgba(255, 79, 163, 0.18);
+      background: rgba(69, 255, 122, 0.12);
     }
 
     .app {
@@ -118,9 +117,9 @@
       gap: 8px;
       padding: 8px 12px;
       border-radius: 999px;
-      color: var(--cyan);
-      background: rgba(81, 215, 255, 0.08);
-      border: 1px solid rgba(81, 215, 255, 0.18);
+      color: var(--green);
+      background: rgba(69, 255, 122, 0.08);
+      border: 1px solid rgba(69, 255, 122, 0.18);
       font-size: 0.8rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -132,13 +131,6 @@
       line-height: 0.98;
       letter-spacing: -0.04em;
       max-width: 10ch;
-    }
-
-    .hero p {
-      margin: 0;
-      color: var(--muted);
-      max-width: 54ch;
-      line-height: 1.6;
     }
 
     .header-actions {
@@ -168,7 +160,7 @@
     .reset-btn:hover,
     .duration-btn:hover {
       transform: translateY(-1px);
-      border-color: rgba(81, 215, 255, 0.28);
+      border-color: rgba(69, 255, 122, 0.28);
       background: rgba(255, 255, 255, 0.07);
     }
 
@@ -269,9 +261,9 @@
     }
 
     .duration-btn.active {
-      background: linear-gradient(120deg, rgba(81, 215, 255, 0.16), rgba(109, 141, 255, 0.18));
-      border-color: rgba(81, 215, 255, 0.35);
-      box-shadow: 0 14px 30px rgba(81, 215, 255, 0.12);
+      background: linear-gradient(120deg, rgba(69, 255, 122, 0.18), rgba(69, 255, 122, 0.08));
+      border-color: rgba(69, 255, 122, 0.35);
+      box-shadow: 0 14px 30px rgba(69, 255, 122, 0.12);
     }
 
     .status-badge {
@@ -293,13 +285,13 @@
 
     .click-zone {
       position: relative;
-      min-height: 360px;
+      min-height: 560px;
       border-radius: 28px;
       border: 1px solid rgba(255, 255, 255, 0.08);
       background:
         linear-gradient(160deg, rgba(255, 255, 255, 0.03), transparent 32%),
-        radial-gradient(circle at top, rgba(109, 141, 255, 0.18), transparent 45%),
-        linear-gradient(180deg, rgba(7, 12, 28, 0.9), rgba(11, 16, 34, 0.96));
+        radial-gradient(circle at top, rgba(69, 255, 122, 0.14), transparent 45%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.96), rgba(5, 14, 7, 0.98));
       display: grid;
       place-items: center;
       text-align: center;
@@ -328,39 +320,39 @@
     .click-zone::before {
       left: -20px;
       bottom: -30px;
-      background: rgba(81, 215, 255, 0.16);
+      background: rgba(69, 255, 122, 0.14);
     }
 
     .click-zone::after {
       right: -24px;
       top: -28px;
-      background: rgba(255, 79, 163, 0.14);
+      background: rgba(69, 255, 122, 0.1);
     }
 
     .click-zone.idle:hover {
-      border-color: rgba(81, 215, 255, 0.24);
-      box-shadow: inset 0 0 0 1px rgba(81, 215, 255, 0.12), 0 26px 50px rgba(0, 0, 0, 0.28);
+      border-color: rgba(69, 255, 122, 0.24);
+      box-shadow: inset 0 0 0 1px rgba(69, 255, 122, 0.12), 0 26px 50px rgba(0, 0, 0, 0.28);
     }
 
     .click-zone.live {
-      border-color: rgba(81, 215, 255, 0.3);
-      box-shadow: inset 0 0 0 1px rgba(81, 215, 255, 0.12), 0 30px 60px rgba(0, 0, 0, 0.32);
+      border-color: rgba(69, 255, 122, 0.3);
+      box-shadow: inset 0 0 0 1px rgba(69, 255, 122, 0.12), 0 30px 60px rgba(0, 0, 0, 0.32);
     }
 
     .click-zone.left-active {
       background:
         linear-gradient(160deg, rgba(255, 255, 255, 0.04), transparent 32%),
-        radial-gradient(circle at top, rgba(81, 215, 255, 0.28), transparent 45%),
-        linear-gradient(180deg, rgba(6, 18, 38, 0.95), rgba(9, 26, 48, 0.96));
-      border-color: rgba(81, 215, 255, 0.46);
+        radial-gradient(circle at top, rgba(69, 255, 122, 0.22), transparent 45%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.96), rgba(10, 44, 18, 0.98));
+      border-color: rgba(69, 255, 122, 0.46);
     }
 
     .click-zone.right-active {
       background:
         linear-gradient(160deg, rgba(255, 255, 255, 0.04), transparent 32%),
-        radial-gradient(circle at top, rgba(255, 79, 163, 0.28), transparent 45%),
-        linear-gradient(180deg, rgba(24, 10, 29, 0.95), rgba(41, 11, 28, 0.96));
-      border-color: rgba(255, 79, 163, 0.44);
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.1), transparent 45%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.96), rgba(7, 24, 11, 0.98));
+      border-color: rgba(255, 255, 255, 0.24);
     }
 
     .click-zone.pressed {
@@ -377,13 +369,6 @@
       margin: 0;
       font-size: clamp(2.4rem, 6vw, 5rem);
       letter-spacing: -0.05em;
-    }
-
-    .zone-inner p {
-      margin: 12px 0 0;
-      color: var(--muted);
-      font-size: 1rem;
-      line-height: 1.65;
     }
 
     .last-click {
@@ -408,13 +393,13 @@
     }
 
     .dot.left {
-      background: var(--cyan);
-      box-shadow: 0 0 14px rgba(81, 215, 255, 0.5);
+      background: var(--green);
+      box-shadow: 0 0 14px rgba(69, 255, 122, 0.5);
     }
 
     .dot.right {
-      background: var(--pink);
-      box-shadow: 0 0 14px rgba(255, 79, 163, 0.48);
+      background: #ffffff;
+      box-shadow: 0 0 14px rgba(255, 255, 255, 0.34);
     }
 
     .stats-grid {
@@ -438,11 +423,11 @@
     }
 
     .left-card strong {
-      color: var(--cyan);
+      color: var(--green);
     }
 
     .right-card strong {
-      color: var(--pink);
+      color: #ffffff;
     }
 
     .total-card strong {
@@ -490,8 +475,8 @@
       width: 0;
       height: 100%;
       border-radius: inherit;
-      background: linear-gradient(90deg, var(--cyan), var(--blue), var(--pink));
-      box-shadow: 0 0 22px rgba(81, 215, 255, 0.22);
+      background: linear-gradient(90deg, var(--green-deep), var(--green-soft), var(--green));
+      box-shadow: 0 0 22px rgba(69, 255, 122, 0.22);
       transition: width 0.08s linear;
     }
 
@@ -525,15 +510,15 @@
     }
 
     .bar-fill.left {
-      background: linear-gradient(90deg, rgba(81, 215, 255, 0.4), rgba(81, 215, 255, 1));
+      background: linear-gradient(90deg, rgba(69, 255, 122, 0.25), rgba(69, 255, 122, 1));
     }
 
     .bar-fill.right {
-      background: linear-gradient(90deg, rgba(255, 79, 163, 0.35), rgba(255, 79, 163, 1));
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.95));
     }
 
     .bar-fill.total {
-      background: linear-gradient(90deg, rgba(61, 242, 164, 0.42), rgba(61, 242, 164, 1));
+      background: linear-gradient(90deg, rgba(69, 255, 122, 0.34), rgba(69, 255, 122, 1));
     }
 
     .graph-shell {
@@ -617,7 +602,7 @@
       }
 
       .click-zone {
-        min-height: 300px;
+        min-height: 420px;
       }
 
       .rate-row {
@@ -631,12 +616,8 @@
     <div class="shell">
       <section class="hero">
         <div>
-          <div class="eyebrow">Dual Input Arena</div>
-          <h1>CPS test for left and right click speed.</h1>
-          <p>
-            Start on the first click, race the countdown, and track left-click, right-click,
-            and total CPS in real time inside one responsive, dark-mode panel.
-          </p>
+          <div class="eyebrow">CPS</div>
+          <h1>CPS test.</h1>
         </div>
         <div class="header-actions">
           <button id="soundToggle" class="toggle" type="button" aria-pressed="false">Sound: Off</button>
@@ -655,12 +636,12 @@
             <div class="pill">
               <span class="label">Timer</span>
               <div id="timerValue" class="value">5.00s</div>
-              <div id="timerLabel" class="subvalue">Waiting for first click</div>
+              <div id="timerLabel" class="subvalue">&nbsp;</div>
             </div>
             <div class="pill">
               <span class="label">Status</span>
               <div id="statusText" class="value">Ready</div>
-              <div id="statusHint" class="subvalue">Click inside the arena to begin</div>
+              <div id="statusHint" class="subvalue">&nbsp;</div>
             </div>
           </div>
 
@@ -677,8 +658,7 @@
           <div id="clickZone" class="click-zone idle" tabindex="0" role="button" aria-label="Click area for CPS test">
             <div class="zone-inner">
               <span class="label">Click Zone</span>
-              <h2 id="zoneHeadline">Tap to Launch</h2>
-              <p id="zoneMessage">Left click glows cyan. Right click glows magenta. Right-click menu is blocked only while the timer is live.</p>
+              <h2 id="zoneHeadline">Ready</h2>
               <div class="last-click">
                 <span id="clickIndicator" class="dot"></span>
                 <span id="lastClickText">Last click: none</span>
@@ -778,9 +758,6 @@
             </div>
           </div>
 
-          <p id="summaryText" class="summary">
-            <strong>Tip:</strong> the timer starts on your first valid click, then every click inside the arena updates the live CPS counters until the session locks.
-          </p>
         </aside>
       </section>
     </div>
@@ -805,7 +782,6 @@
             statusHint: document.getElementById("statusHint"),
             liveBadge: document.getElementById("liveBadge"),
             zoneHeadline: document.getElementById("zoneHeadline"),
-            zoneMessage: document.getElementById("zoneMessage"),
             clickIndicator: document.getElementById("clickIndicator"),
             lastClickText: document.getElementById("lastClickText"),
             resetButton: document.getElementById("resetButton"),
@@ -822,8 +798,7 @@
             leftPath: document.getElementById("leftPath"),
             rightPath: document.getElementById("rightPath"),
             totalPath: document.getElementById("totalPath"),
-            graphWindowLabel: document.getElementById("graphWindowLabel"),
-            summaryText: document.getElementById("summaryText")
+            graphWindowLabel: document.getElementById("graphWindowLabel")
           };
 
           this.audioContext = null;
@@ -1147,31 +1122,25 @@
 
           if (!this.state.running && !this.state.finished) {
             this.ui.statusText.textContent = "Ready";
-            this.ui.statusHint.textContent = "Click inside the arena to begin";
-            this.ui.timerLabel.textContent = "Waiting for first click";
+            this.ui.statusHint.innerHTML = "&nbsp;";
+            this.ui.timerLabel.innerHTML = "&nbsp;";
             this.ui.liveBadge.textContent = "Idle";
             this.ui.liveBadge.classList.remove("live");
-            this.ui.zoneHeadline.textContent = "Tap to Launch";
-            this.ui.zoneMessage.textContent = "Left click glows cyan. Right click glows magenta. Right-click menu is blocked only while the timer is live.";
-            this.ui.summaryText.innerHTML = "<strong>Tip:</strong> the timer starts on your first valid click, then every click inside the arena updates the live CPS counters until the session locks.";
+            this.ui.zoneHeadline.textContent = "Ready";
           } else if (this.state.running) {
             this.ui.statusText.textContent = "Live";
-            this.ui.statusHint.textContent = "Clicks are counting now";
-            this.ui.timerLabel.textContent = "Countdown in progress";
+            this.ui.statusHint.innerHTML = "&nbsp;";
+            this.ui.timerLabel.innerHTML = "&nbsp;";
             this.ui.liveBadge.textContent = "Running";
             this.ui.liveBadge.classList.add("live");
             this.ui.zoneHeadline.textContent = `${totalCps.toFixed(2)} CPS`;
-            this.ui.zoneMessage.textContent = "Keep clicking inside this box. Clicks outside the arena are ignored, and the session will auto-freeze when time expires.";
-            this.ui.summaryText.innerHTML = `<strong>Live:</strong> ${totalClicks} total clicks over ${elapsed.toFixed(2)} seconds. Current split is ${this.state.leftClicks} left and ${this.state.rightClicks} right.`;
           } else {
             this.ui.statusText.textContent = "Locked";
-            this.ui.statusHint.textContent = "Final score captured";
-            this.ui.timerLabel.textContent = "Session complete";
+            this.ui.statusHint.innerHTML = "&nbsp;";
+            this.ui.timerLabel.innerHTML = "&nbsp;";
             this.ui.liveBadge.textContent = "Finished";
             this.ui.liveBadge.classList.remove("live");
             this.ui.zoneHeadline.textContent = `${totalCps.toFixed(2)} Final CPS`;
-            this.ui.zoneMessage.textContent = "The timer ended and the arena is frozen. Reset to run another round or change the test duration first.";
-            this.ui.summaryText.innerHTML = `<strong>Final result:</strong> ${totalClicks} clicks in ${this.duration} seconds. Left CPS ${leftCps.toFixed(2)}, right CPS ${rightCps.toFixed(2)}, total CPS ${totalCps.toFixed(2)}.`;
           }
 
           this.renderGraph();
