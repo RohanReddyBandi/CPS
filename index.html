@@ -631,6 +631,34 @@
       font-size: 0.88rem;
     }
 
+    .graph-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .graph-stat {
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .graph-stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .graph-stat strong {
+      font-size: 1.05rem;
+      letter-spacing: -0.03em;
+    }
+
     svg {
       display: block;
       width: 100%;
@@ -744,6 +772,10 @@
       }
 
       .duration-row {
+        grid-template-columns: 1fr;
+      }
+
+      .graph-stats {
         grid-template-columns: 1fr;
       }
 
@@ -886,6 +918,20 @@
               <span>Click rate timeline</span>
               <span id="graphWindowLabel">0.2s buckets</span>
             </div>
+            <div class="graph-stats">
+              <div class="graph-stat">
+                <span>Peak CPS</span>
+                <strong id="graphPeakValue">0.00</strong>
+              </div>
+              <div class="graph-stat">
+                <span>Average CPS</span>
+                <strong id="graphAverageValue">0.00</strong>
+              </div>
+              <div class="graph-stat">
+                <span>Total Clicks</span>
+                <strong id="graphClicksValue">0</strong>
+              </div>
+            </div>
             <svg id="graph" viewBox="0 0 520 180" aria-label="Click rate graph">
               <defs>
                 <linearGradient id="leftGradient" x1="0%" x2="100%" y1="0%" y2="0%">
@@ -907,9 +953,14 @@
                 <line x1="24" y1="84" x2="496" y2="84"></line>
                 <line x1="24" y1="140" x2="496" y2="140"></line>
               </g>
+              <text id="graphMaxLabel" x="24" y="18" fill="rgba(255,255,255,0.52)" font-size="11">0 CPS</text>
+              <text id="graphStartLabel" x="24" y="166" fill="rgba(255,255,255,0.42)" font-size="11">0s</text>
+              <text id="graphEndLabel" x="470" y="166" fill="rgba(255,255,255,0.42)" font-size="11">5s</text>
               <path id="leftPath" d="" fill="none" stroke="url(#leftGradient)" stroke-width="4" stroke-linecap="round"></path>
               <path id="rightPath" d="" fill="none" stroke="url(#rightGradient)" stroke-width="4" stroke-linecap="round"></path>
               <path id="totalPath" d="" fill="none" stroke="url(#totalGradient)" stroke-width="4" stroke-linecap="round"></path>
+              <circle id="peakMarker" cx="24" cy="140" r="4.5" fill="#10f0b2"></circle>
+              <text id="peakMarkerLabel" x="34" y="134" fill="#10f0b2" font-size="11">Peak</text>
             </svg>
             <div class="legend">
               <span><i style="background:#45ff7a"></i> Left</span>
@@ -971,9 +1022,17 @@
             leftRateLabel: document.getElementById("leftRateLabel"),
             rightRateLabel: document.getElementById("rightRateLabel"),
             totalRateLabel: document.getElementById("totalRateLabel"),
+            graphPeakValue: document.getElementById("graphPeakValue"),
+            graphAverageValue: document.getElementById("graphAverageValue"),
+            graphClicksValue: document.getElementById("graphClicksValue"),
             leftPath: document.getElementById("leftPath"),
             rightPath: document.getElementById("rightPath"),
             totalPath: document.getElementById("totalPath"),
+            graphMaxLabel: document.getElementById("graphMaxLabel"),
+            graphStartLabel: document.getElementById("graphStartLabel"),
+            graphEndLabel: document.getElementById("graphEndLabel"),
+            peakMarker: document.getElementById("peakMarker"),
+            peakMarkerLabel: document.getElementById("peakMarkerLabel"),
             graphWindowLabel: document.getElementById("graphWindowLabel"),
             resultModal: document.getElementById("resultModal"),
             replayButton: document.getElementById("replayButton"),
@@ -1059,7 +1118,7 @@
 
           event.preventDefault();
 
-          if (this.state.finished) {
+          if (this.state.finished && !this.replayArmed) {
             return;
           }
 
@@ -1151,7 +1210,6 @@
 
         prepareReplay() {
           this.replayArmed = true;
-          this.state.finished = false;
           this.ui.clickZone.className = "click-zone idle";
           this.hideModal();
           this.render();
@@ -1352,10 +1410,25 @@
         renderGraph() {
           const { bucketMs, leftSeries, rightSeries, totalSeries } = this.buildGraphSeries();
           const peak = Math.max(1, ...leftSeries, ...rightSeries, ...totalSeries);
+          const peakIndex = totalSeries.findIndex((value) => value === peak);
+          const average = this.toCps(this.getTotalClicks(), Math.max(this.getElapsedSeconds(), this.state.finished ? this.duration : 0));
+          const markerX = 24 + ((520 - 48) * Math.max(peakIndex, 0)) / Math.max(totalSeries.length - 1, 1);
+          const markerY = 18 + (180 - 44) - ((180 - 44) * peak) / Math.max(peak, 1);
           this.ui.leftPath.setAttribute("d", this.buildPath(leftSeries, 520, 180, peak));
           this.ui.rightPath.setAttribute("d", this.buildPath(rightSeries, 520, 180, peak));
           this.ui.totalPath.setAttribute("d", this.buildPath(totalSeries, 520, 180, peak));
           this.ui.graphWindowLabel.textContent = `${(bucketMs / 1000).toFixed(1)}s buckets`;
+          this.ui.graphPeakValue.textContent = peak.toFixed(2);
+          this.ui.graphAverageValue.textContent = average.toFixed(2);
+          this.ui.graphClicksValue.textContent = String(this.getTotalClicks());
+          this.ui.graphMaxLabel.textContent = `${peak.toFixed(2)} CPS`;
+          this.ui.graphStartLabel.textContent = "0s";
+          this.ui.graphEndLabel.textContent = `${this.duration}s`;
+          this.ui.peakMarker.setAttribute("cx", markerX.toFixed(2));
+          this.ui.peakMarker.setAttribute("cy", markerY.toFixed(2));
+          this.ui.peakMarkerLabel.setAttribute("x", Math.min(markerX + 10, 468).toFixed(2));
+          this.ui.peakMarkerLabel.setAttribute("y", Math.max(markerY - 10, 18).toFixed(2));
+          this.ui.peakMarkerLabel.textContent = `Peak ${peak.toFixed(2)}`;
         }
 
         render() {
@@ -1391,7 +1464,7 @@
           this.ui.clickIndicator.className = `dot ${this.state.lastButton === "none" ? "" : this.state.lastButton}`.trim();
           this.ui.lastClickText.textContent = `Last click: ${this.state.lastButton === "none" ? "none" : this.state.lastButton}`;
 
-          if (!this.state.running && !this.state.finished) {
+          if (!this.state.running && !this.state.finished && !this.replayArmed) {
             this.ui.timerLabel.innerHTML = "&nbsp;";
             this.ui.zoneHeadline.textContent = "Ready";
           } else if (this.state.running) {
