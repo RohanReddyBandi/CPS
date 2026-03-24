@@ -985,6 +985,7 @@
           this.duration = 5;
           this.selectedEffect = "splash";
           this.soundEnabled = false;
+          this.replayArmed = false;
           this.frameId = null;
           this.flashTimeout = null;
           this.resetState();
@@ -993,6 +994,7 @@
         }
 
         resetState() {
+          this.replayArmed = false;
           this.state = {
             running: false,
             finished: false,
@@ -1027,7 +1029,7 @@
           });
 
           this.ui.resetButton.addEventListener("click", () => this.reset());
-          this.ui.replayButton.addEventListener("click", () => this.reset());
+          this.ui.replayButton.addEventListener("click", () => this.prepareReplay());
           this.ui.soundToggle.addEventListener("click", () => this.toggleSound());
 
           this.ui.durationButtons.forEach((button) => {
@@ -1099,6 +1101,10 @@
         }
 
         start() {
+          if (this.replayArmed) {
+            this.clearRunData();
+            this.replayArmed = false;
+          }
           const now = performance.now();
           this.state.running = true;
           this.state.finished = false;
@@ -1141,6 +1147,24 @@
         reset() {
           this.resetState();
           this.render();
+        }
+
+        prepareReplay() {
+          this.replayArmed = true;
+          this.state.finished = false;
+          this.ui.clickZone.className = "click-zone idle";
+          this.hideModal();
+          this.render();
+        }
+
+        clearRunData() {
+          this.state.leftClicks = 0;
+          this.state.rightClicks = 0;
+          this.state.lastButton = "none";
+          this.state.clickMoments = [];
+          this.state.startTime = 0;
+          this.state.endTime = 0;
+          this.ui.effectLayer.innerHTML = "";
         }
 
         showResultModal() {
